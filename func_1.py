@@ -7,16 +7,16 @@ import gzip
 
 
 
-def nodes_in_range(start, max_d, d_type):
+def nodes_in_range(G,start, max_d, d_type):
     """
     Basic function that gets all the nodes that are within the max_d distance from the start node
     :param start: starting node
     :param max_d: maximum distance allowed
     :return: list of found nodes
     """
-    return nodes_in_range_util(start, 0, max_d, max_d, [start], d_type)
+    return nodes_in_range_util(G,start, 0, max_d, max_d, [start], d_type)
 
-def nodes_in_range_util(node, i, max_d, current_d, res,dist_type):
+def nodes_in_range_util(G,node, i, max_d, current_d, res,dist_type):
     """
     Recursive helper function for the nodes_in_range function
 
@@ -33,7 +33,7 @@ def nodes_in_range_util(node, i, max_d, current_d, res,dist_type):
     # If the current 'walkable' distance is less than 0, increment i and call recursion
     elif current_d <= 0:
         i += 1
-        return nodes_in_range_util(node, i, max_d, max_d, res, dist_type)
+        return nodes_in_range_util(G,node, i, max_d, max_d, res, dist_type)
     # Else we start finding
     
     else:
@@ -70,16 +70,16 @@ def nodes_in_range_util(node, i, max_d, current_d, res,dist_type):
                 print(res)
                 # Call recursion starting from the current node
                 i += 1
-                return nodes_in_range_util(node, i, max_d, current_d,
-                                                nodes_in_range_util(next_node, 0, max_d, current_d - weight, res, dist_type), dist_type)
+                return nodes_in_range_util(G,node, i, max_d, current_d,
+                                                nodes_in_range_util(G,next_node, 0, max_d, current_d - weight, res, dist_type), dist_type)
             else:
                 # Call recursion going to the next node
                 i += 1
-                return nodes_in_range_util(node, i, max_d, current_d, res, dist_type)
+                return nodes_in_range_util(G,node, i, max_d, current_d, res, dist_type)
         # Increment i if the already marked the next node and proceed
         else:
             i += 1
-            return nodes_in_range_util(node, i, max_d, current_d, res, dist_type)
+            return nodes_in_range_util(G,node, i, max_d, current_d, res, dist_type)
 #now we get edges attributes, for each category (time,distance,network)
 
 t_attr = nx.get_edge_attributes(G,'time')

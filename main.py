@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy
+import func_1
 
 
 
@@ -62,6 +63,13 @@ def Function_1():
     node_id = int(input("Insert the start node\n"))
     dist_funct = int(input("Insert 1 for the distance function, 2 for the time distance function or 3 for the network distance\n"))
     threshold = int(input("Insert the distance threshold\n"))
+    if dist_funct == 1:
+        param = 'dist'
+    elif dist_funct == 2:
+        praram = 'time'
+    else:
+        param = 'net'
+    return func_1.nodes_in_range(G,node_id,threshold,param)
 
 def Function_2():
     print("soon..")
@@ -93,8 +101,8 @@ def Function_4():
     
     
     
-G = nx.read_gpickle("directed_graph.gpickle.gz")
-int_func = int(input("What func do you want?\n"))
+G = nx.read_gpickle("Final_graph.gpickle.gz")
+int_func = int(input("What func do you want to run?\n"))
 getFunction(int_func)
 
 
