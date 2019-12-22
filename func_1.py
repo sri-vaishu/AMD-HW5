@@ -120,7 +120,7 @@ def map(start,res):
 
     for coord in coord_list:
         if coord != centre:
-            folium.Marker(location = coord, tooltip='Click me!').add_to(m), icon=folium.Icon(color = 'red')).add_to(m)
+            folium.Marker(location = coord, icon=folium.Icon(color = 'red')).add_to(m)
 
     return m
         
