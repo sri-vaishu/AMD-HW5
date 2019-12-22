@@ -3,20 +3,39 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy
 import gzip
+import folium
+from folium.map import *
+from folium import plugins
+from folium.plugins import MeasureControl
+from folium.plugins import FloatImage
+from itertools import permutations 
+
+"""
+We worked with a graph made by NXGraph library, so before using functions,
+we had to set proper data structure
+
+"""
 
 
 
+#now we get edges attributes, for each category (time,distance,network)
 
-def nodes_in_range(G,start, max_d, d_type):
+t_attr = nx.get_edge_attributes(G,'time')
+d_attr = nx.get_edge_attributes(G,'dist')
+n_attr = nx.get_edge_attributes(G,'net')
+
+                                   ################### FUNCTION #########################
+
+def nodes_in_range(start, max_d, d_type):
     """
     Basic function that gets all the nodes that are within the max_d distance from the start node
     :param start: starting node
     :param max_d: maximum distance allowed
     :return: list of found nodes
     """
-    return nodes_in_range_util(G,start, 0, max_d, max_d, [start], d_type)
+    return nodes_in_range_util(start, 0, max_d, max_d, [start], d_type)
 
-def nodes_in_range_util(G,node, i, max_d, current_d, res,dist_type):
+def nodes_in_range_util(node, i, max_d, current_d, res,dist_type):
     """
     Recursive helper function for the nodes_in_range function
 
@@ -33,7 +52,7 @@ def nodes_in_range_util(G,node, i, max_d, current_d, res,dist_type):
     # If the current 'walkable' distance is less than 0, increment i and call recursion
     elif current_d <= 0:
         i += 1
-        return nodes_in_range_util(G,node, i, max_d, max_d, res, dist_type)
+        return nodes_in_range_util(node, i, max_d, max_d, res, dist_type)
     # Else we start finding
     
     else:
@@ -70,23 +89,42 @@ def nodes_in_range_util(G,node, i, max_d, current_d, res,dist_type):
                 print(res)
                 # Call recursion starting from the current node
                 i += 1
-                return nodes_in_range_util(G,node, i, max_d, current_d,
-                                                nodes_in_range_util(G,next_node, 0, max_d, current_d - weight, res, dist_type), dist_type)
+                return nodes_in_range_util(node, i, max_d, current_d,
+                                                nodes_in_range_util(next_node, 0, max_d, current_d - weight, res, dist_type), dist_type)
             else:
                 # Call recursion going to the next node
                 i += 1
-                return nodes_in_range_util(G,node, i, max_d, current_d, res, dist_type)
+                return nodes_in_range_util(node, i, max_d, current_d, res, dist_type)
         # Increment i if the already marked the next node and proceed
         else:
             i += 1
-            return nodes_in_range_util(G,node, i, max_d, current_d, res, dist_type)
-#now we get edges attributes, for each category (time,distance,network)
+            return nodes_in_range_util(node, i, max_d, current_d, res, dist_type)
 
-t_attr = nx.get_edge_attributes(G,'time')
-d_attr = nx.get_edge_attributes(G,'dist')
-n_attr = nx.get_edge_attributes(G,'net')
 
-#all this variables are dict, as a key there ia a tuple (node1,node2), and the value is the weight of the edge   
+                                            ################# VISUALIZATION #########################
+res  = nodes_in_range_util(node, i, max_d, current_d, res,dist_type)
+
+lat =dict(nx.get_node_attributes(G, 'latitude')) #dictionary with all nodes  and their latitude
+long = dict(nx.get_node_attributes(G, 'longitude'))
+
+def map(start,res):
+    centre = [-long[start]/1000000 , lat[start]/1000000] #centre node
+    coord_list = []
+    for el in res:
+        coord = [-long[el]/1000000,lat[el]/1000000]
+        coord_list.append(coord)
+
+    #creating the map
+
+    m = folium.Map(location = centre, zoom_start = 15)
+
+    for coord in coord_list:
+        if coord != centre:
+            folium.Marker(location = coord, tooltip='Click me!').add_to(m), icon=folium.Icon(color = 'red')).add_to(m)
+
+    return m
         
-        
-        
+
+
+
+
